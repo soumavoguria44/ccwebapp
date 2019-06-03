@@ -16,9 +16,5 @@ public class EmailAndPasswordLogics {
         return matcher.matches();
     }
 
-    public String EncryptPassword(String password){
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String hashedPassword = passwordEncoder.encode(password);
-        return hashedPassword;
-    }
+
 }
