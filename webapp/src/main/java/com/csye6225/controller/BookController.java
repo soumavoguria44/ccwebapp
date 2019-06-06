@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class BookController {
         return json;
     }
 
-    // Put Method book Create
+    // Put Method book Update
 
     @RequestMapping(value = "/book", method = RequestMethod.PUT, produces = "application/json")
 
@@ -77,5 +78,60 @@ public class BookController {
 
         return jsonObject.toString();
     }
+
+
+
+    // Get a book method
+
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
+
+    @ResponseBody
+
+
+    public String getBooksById(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+
+       Book book= bookRepository.findById(id);
+        JsonObject jsonObject = new JsonObject();
+       String json=new Gson().toJson(book);
+        if (book!=null) {
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            return json;
+        }
+        else
+        {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return jsonObject.toString();
+        }
+
+
+    }
+
+    // Delete a book
+
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.DELETE, produces="application/json")
+
+    @ResponseBody
+    public String BookDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
+
+      Book book= bookRepository.findById(id);
+      JsonObject jsonObject=new JsonObject();
+      if(book!=null){
+      bookRepository.delete(book);
+      response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+        }
+      else{
+
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        return jsonObject.toString();
+
+    }
+
+
+
+
 
 }
