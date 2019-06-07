@@ -42,24 +42,15 @@ public class WebAppSecurity extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(basicAuthEntryPoint);
     }
 
-
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-//    @Bean
-//    public HttpSessionStrategy httpSessionStrategy() {
-//        return new HeaderHttpSessionStrategy();
-//    }
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
-
-
-
-
 
 }

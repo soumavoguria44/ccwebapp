@@ -26,8 +26,6 @@ public class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
     }
 
 
-
-
     @Override
     public void afterPropertiesSet() throws Exception {
         setRealmName("csye6225");

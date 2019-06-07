@@ -3,11 +3,9 @@ package com.csye6225.service;
 
 import com.csye6225.models.User;
 import com.csye6225.repository.UserRepository;
-import com.csye6225.services.MyUserDetailsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -16,8 +14,6 @@ import static junit.framework.TestCase.assertEquals;
 
 @RunWith(SpringRunner.class)
 public class MyUserDetailsServiceTest {
-//    @InjectMocks
-//    private MyUserDetailsService myUserDetailsService;
 
     @Mock
     private UserRepository userRepository;
@@ -33,7 +29,6 @@ public class MyUserDetailsServiceTest {
 
     @Test
     public void TestfindByEmailAddressPositive() {
-
         User u = userRepository.findByEmailAddress("b@b.com");
         assertEquals(u.getEmailAddress(), "b@b.com");
     }
