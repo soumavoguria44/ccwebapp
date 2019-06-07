@@ -1,0 +1,108 @@
+package com.csye6225.controller;
+
+import com.csye6225.businessLogics.EmailAndPasswordLogics;
+import com.csye6225.models.User;
+import com.csye6225.repository.BookRepository;
+import com.csye6225.repository.UserRepository;
+import com.csye6225.services.MyUserDetailsService;
+import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@RestController
+public class UserController {
+
+    @Autowired
+    private BCryptPasswordEncoder bcrypt;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
+
+    private final static Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    /**
+     * Get method to get the Logged in User
+     * @param request
+     * @param response
+     * @return Json
+     */
+    @RequestMapping(value = "/", method= RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String GetUser(HttpServletRequest request, HttpServletResponse response){
+
+        JsonObject jsonObject = new JsonObject();
+        try {
+            jsonObject.addProperty("message", "you are logged in. current time is " + java.time.LocalTime.now().toString());
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return jsonObject.toString();
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage(), ex.getStackTrace());
+            jsonObject.addProperty("error", "Exception occured! Check log");
+            return jsonObject.toString();
+        }
+    }
+
+    /**
+     * Post method to save the user in the database
+     * @param request
+     * @param response
+     * @param user
+     * @return Json message
+     */
+
+    @RequestMapping(value = "/user/register", method = RequestMethod.POST, produces = "application/json")
+
+    @ResponseBody
+    public String Register(HttpServletRequest request, HttpServletResponse response, @RequestBody User user){
+
+        JsonObject jsonObject = new JsonObject();
+        try {
+            // User user = new User();
+            EmailAndPasswordLogics emailPass = new EmailAndPasswordLogics();
+
+            String email_id = user.getEmailAddress();
+            String password = user.getPassword();
+            // Password Validation
+            if (emailPass.ValidPassword(password)) {
+                // Email address Validation
+                if (emailPass.ValidEmail(email_id)) {
+                    // Check for already registered user
+                    User regUser = userRepository.findByEmailAddress(email_id);
+                    if (regUser == null) {
+                        myUserDetailsService.register(user);
+                        jsonObject.addProperty("message", "User Registered");
+                        response.setStatus(HttpServletResponse.SC_CREATED);
+                    } else {
+                        jsonObject.addProperty("message", "User account already exists!!!");
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    }
+                } else {
+                    jsonObject.addProperty("message", "Please enter a valid Email-Id");
+                    response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
+                }
+            } else {
+                jsonObject.addProperty("message", "Please enter a acceptable password");
+                response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
+            }
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage(), ex.getStackTrace());
+            jsonObject.addProperty("error", "Exception occured! Check log");
+            return jsonObject.toString();
+        }
+        return jsonObject.toString();
+    }
+}
