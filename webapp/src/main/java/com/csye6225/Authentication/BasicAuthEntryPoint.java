@@ -21,7 +21,7 @@ public class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
         response.setContentType(ContentType.APPLICATION_JSON.getMimeType());
         PrintWriter writer = response.getWriter();
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("message", "unauthorized");
+        jsonObject.addProperty("message", "you are not logged in");
         writer.println(jsonObject.toString());
     }
 

@@ -23,7 +23,7 @@ public class BookController {
 
     @RequestMapping(value = "/book", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public String GetBooks(HttpServletRequest request, HttpServletResponse response, @RequestBody Book bookReq){
+    public String GetBooks(HttpServletRequest request, HttpServletResponse response){
 
         List<Book> books = (List)bookRepository.findAll();
         String json = new Gson().toJson(books);
@@ -34,7 +34,6 @@ public class BookController {
     // Post Method book Create
 
     @RequestMapping(value = "/book", method = RequestMethod.POST, produces = "application/json")
-
     @ResponseBody
     public String Book(HttpServletRequest request, HttpServletResponse response, @RequestBody Book bookReq){
 
@@ -53,6 +52,75 @@ public class BookController {
         return json;
     }
 
+    // Put Method book Update
+
+    @RequestMapping(value = "/book", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public String BookUpdate(HttpServletRequest request, HttpServletResponse response, @RequestBody Book bookReq){
+
+        JsonObject jsonObject = new JsonObject();
+        Book book = bookRepository.findById(bookReq.getId());
+        if (book!=null) {
+            book.setTitle(bookReq.getTitle());
+            book.setAuthor(bookReq.getAuthor());
+            book.setIsbn(bookReq.getIsbn());
+            book.setQuantity(bookReq.getQuantity());
+            bookRepository.save(book);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        }
+        else{
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        return jsonObject.toString();
+    }
+
+
+
+// Get a book method by ID
+
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public String getBooksById(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+
+        Book book= bookRepository.findById(id);
+        JsonObject jsonObject = new JsonObject();
+        String json=new Gson().toJson(book);
+        if (book!=null) {
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            return json;
+        }
+        else
+        {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return jsonObject.toString();
+        }
+
+
+    }
+
+// Delete a book by ID
+
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public String BookDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
+
+        Book book= bookRepository.findById(id);
+        JsonObject jsonObject=new JsonObject();
+        if(book!=null){
+            bookRepository.delete(book);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+        }
+        else{
+
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        return jsonObject.toString();
+
+    }
 
 
 }
