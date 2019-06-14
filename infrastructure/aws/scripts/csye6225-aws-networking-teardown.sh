@@ -10,12 +10,12 @@
 #
 # Jun 12 2019 -- Soumavo Guria  -- Initial Creation
 # Jun 13 2019 -- Soumavo Guria -- Modified
-# Jun 14 2019 -- Anurag Dhar	-- Modified Script bugs 
+# Jun 14 2019 -- Anurag Dhar	-- Modified Script bugs
 #
 # ********************************************************************************************
 
 read -p "Please enter tag name of vpc to delete:" tag_name
-read -p "Please enter tag name of route table to delete: " route_tag
+# read -p "Please enter tag name of route table to delete: " route_tag
 
 
 echo -e "\n"
@@ -200,7 +200,7 @@ step="Fetch: Public Route Table"
 echo " **** Fetching Public Route Table **** "
 
 route_table_ids=$(aws ec2 describe-route-tables \
---filters Name=vpc-id,Values=$vpc_id Name=tag:Name,Values=$route_tag \
+--filters Name=vpc-id,Values=$vpc_id Name=tag:Name,Values="${tag_name}-myRT" \
 --query 'RouteTables[].RouteTableId' --output text)
 
 echo "$route_table_ids"

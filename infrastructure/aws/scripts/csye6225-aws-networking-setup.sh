@@ -26,7 +26,7 @@
 #==============================================================================
 #
 read -p "Enter your Region :" AWS_REGION
-read -p "Enter your VPC Name :" VPC_NAME
+read -p "Enter a tag Name for VPC:" TAG_NAME
 read -p "Enter your VPC_CIDR :" VPC_CIDR
 read -p "Enter your Subnet1 Public CIDR :" SUBNET1_PUBLIC_CIDR
 read -p "Enter your Subnet1 Availability Zone :" SUBNET1_PUBLIC_VR
@@ -38,7 +38,7 @@ read -p "Enter your Subnet3 Public CIDR :" SUBNET3_PUBLIC_CIDR
 read -p "Enter your Subnet3 Public Availability Zone :" SUBNET3_PUBLIC_VR
 read -p "Enter your Subnet3 Public Name :" SUBNET3_PUBLIC_NAME
 read -p "Enter Internet Gateway Name :" IGW_NAME
-read -p "Enter Route Table Name :" ROUTE_TABLE_NAME
+# read -p "Enter Route Table Name :" ROUTE_TABLE_NAME
 
 step="START"
 
@@ -65,9 +65,9 @@ echo "  VPC ID '$VPC_ID' CREATED in '$AWS_REGION' region."
   step="Create tag for VPC"
     aws ec2 create-tags \
     --resources $VPC_ID \
-    --tags "Key=Name,Value=$VPC_NAME" \
+    --tags "Key=Name,Value=${TAG_NAME}" \
     --region $AWS_REGION
-    echo "  VPC ID '$VPC_ID' NAMED as '$VPC_NAME'."
+    echo "  VPC ID '$VPC_ID' NAMED as '$TAG_NAME'."
 flag=$?
 
 fi
@@ -219,10 +219,10 @@ then
 	step="Tag RT"
 aws ec2 create-tags \
   --resources $ROUTE_TABLE_ID \
-  --tags "Key=Name,Value=$ROUTE_TABLE_NAME" \
+  --tags "Key=Name,Value=${TAG_NAME}-myRT" \
   --region $AWS_REGION
 echo " Internet Gateway ID '$ROUTE_TABLE_ID' NAMED as" \
-"'$ROUTE_TABLE_NAME'."
+"'${ROUTE_TABLE_NAME}-myRT'."
 flag=$?
 fi
 
