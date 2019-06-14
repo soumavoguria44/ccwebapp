@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController("BookController")
@@ -74,14 +75,18 @@ public class BookController {
 
         JsonObject jsonObject = new JsonObject();
         try {
-//            Book book = new Book();
-
-            UUID id = UUID.randomUUID(); // Generating UUID for Book Id
-            book.setId(id.toString());
-            bookRepository.save(book);
-            String json = new Gson().toJson(book);
-            response.setStatus(HttpServletResponse.SC_CREATED);
-            return json;
+            if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
+                UUID id = UUID.randomUUID(); // Generating UUID for Book Id
+                book.setId(id.toString());
+                bookRepository.save(book);
+                String json = new Gson().toJson(book);
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                return json;
+            }
+            else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return jsonObject.toString();
+            }
         }
         catch (Exception ex){
             logger.error(ex.getMessage(), ex.getStackTrace());
@@ -107,12 +112,17 @@ public class BookController {
         try {
             Book book = bookRepository.findById(bookReq.getId());
             if (book != null) {
-                book.setTitle(bookReq.getTitle());
-                book.setAuthor(bookReq.getAuthor());
-                book.setIsbn(bookReq.getIsbn());
-                book.setQuantity(bookReq.getQuantity());
-                bookRepository.save(book);
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
+                    book.setTitle(bookReq.getTitle());
+                    book.setAuthor(bookReq.getAuthor());
+                    book.setIsbn(bookReq.getIsbn());
+                    book.setQuantity(bookReq.getQuantity());
+                    bookRepository.save(book);
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }
+                else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -202,13 +212,14 @@ public class BookController {
 
     @RequestMapping(value = "/book/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public String ImageUpload(@PathVariable("idBook")String id,@RequestParam MultipartFile file,HttpServletResponse response) throws Exception {
+    public String ImageUpload(@PathVariable("idBook")String id, @RequestParam MultipartFile file, HttpServletResponse response) throws Exception {
 
         JsonObject jsonObject = new JsonObject();
+
         Book book = bookRepository.findById(id);
         if(book!=null)
         {
-                    if (imageService.fileCheck(file.getContentType()))
+                   if (imageService.fileCheck(file.getContentType()))
                     {
                             BookImage bookImage = new BookImage();
                             String photoNewName =  imageService.generateFileName(file);
@@ -303,7 +314,8 @@ public class BookController {
             } else {
 
 
-                            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                jsonObject.addProperty("message", "Book not found!");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     }
 
         }catch (Exception ex){

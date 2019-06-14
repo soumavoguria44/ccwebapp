@@ -41,8 +41,5 @@ public class ImageService  {
 
         return filePath;
 
-
     }
-
-
 }
