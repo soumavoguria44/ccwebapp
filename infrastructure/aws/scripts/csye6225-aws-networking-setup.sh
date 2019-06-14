@@ -30,14 +30,14 @@ read -p "Enter a tag Name for VPC:" TAG_NAME
 read -p "Enter your VPC_CIDR :" VPC_CIDR
 read -p "Enter your Subnet1 Public CIDR :" SUBNET1_PUBLIC_CIDR
 read -p "Enter your Subnet1 Availability Zone :" SUBNET1_PUBLIC_VR
-read -p "Enter your Subnet1 Public Name :" SUBNET1_PUBLIC_NAME
+# read -p "Enter your Subnet1 Public Name :" SUBNET1_PUBLIC_NAME
 read -p "Enter your Subnet2 Public CIDR :" SUBNET2_PUBLIC_CIDR
 read -p "Enter your Subnet2 Public Availability Zone :" SUBNET2_PUBLIC_VR
-read -p "Enter your Subnet2 Public Name :" SUBNET2_PUBLIC_NAME
+# read -p "Enter your Subnet2 Public Name :" SUBNET2_PUBLIC_NAME
 read -p "Enter your Subnet3 Public CIDR :" SUBNET3_PUBLIC_CIDR
 read -p "Enter your Subnet3 Public Availability Zone :" SUBNET3_PUBLIC_VR
-read -p "Enter your Subnet3 Public Name :" SUBNET3_PUBLIC_NAME
-read -p "Enter Internet Gateway Name :" IGW_NAME
+# read -p "Enter your Subnet3 Public Name :" SUBNET3_PUBLIC_NAME
+# read -p "Enter Internet Gateway Name :" IGW_NAME
 # read -p "Enter Route Table Name :" ROUTE_TABLE_NAME
 
 step="START"
@@ -96,10 +96,10 @@ then
 step="Create tag for Subnet1"
 aws ec2 create-tags \
   --resources $SUBNET1_PUBLIC_ID \
-  --tags "Key=Name,Value=$SUBNET1_PUBLIC_NAME" \
+  --tags "Key=Name,Value=${TAG_NAME}-publicSubnet1" \
   --region $AWS_REGION
 echo "  Subnet ID '$SUBNET1_PUBLIC_ID' NAMED as" \
-"'$SUBNET1_PUBLIC_NAME'."
+"'${TAG_NAME}-publicSubnet1'."
 flag=$?
 fi
 
@@ -128,10 +128,10 @@ then
 step="Create tag for Subnet2"
 aws ec2 create-tags \
   --resources $SUBNET2_PUBLIC_ID \
-  --tags "Key=Name,Value=$SUBNET2_PUBLIC_NAME" \
+  --tags "Key=Name,Value=${TAG_NAME}-publicSubnet2" \
   --region $AWS_REGION
 echo "  Subnet ID '$SUBNET2_PUBLIC_ID' NAMED as" \
-"'$SUBNET2_PUBLIC_NAME'."
+"'${TAG_NAME}-publicSubnet2'."
 flag=$?
 
 fi
@@ -161,10 +161,10 @@ then
 step="Create tag for Subnet3"
 aws ec2 create-tags \
   --resources $SUBNET3_PUBLIC_ID \
-  --tags "Key=Name,Value=$SUBNET3_PUBLIC_NAME" \
+  --tags "Key=Name,Value=${TAG_NAME}-publicSubnet3" \
   --region $AWS_REGION
 echo "  Subnet ID '$SUBNET3_PUBLIC_ID' NAMED as" \
-"'$SUBNET3_PUBLIC_NAME'."
+"'${TAG_NAME}-publicSubnet3'."
 flag=$?
 
 fi
@@ -191,10 +191,10 @@ then
 step="Create IG Tag"
 aws ec2 create-tags \
   --resources $IGW_ID \
-  --tags "Key=Name,Value=$IGW_NAME" \
+  --tags "Key=Name,Value=${TAG_NAME}-IGW" \
   --region $AWS_REGION
 echo " Internet Gateway ID '$IGW_ID' NAMED as" \
-"'$IGW_NAME'."
+"'${TAG_NAME}-IGW'."
 flag=$?
 fi
 
