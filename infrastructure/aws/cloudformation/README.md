@@ -2,7 +2,7 @@
 
 * Anurag Dhar dhar.a@husky.neu.edu 001443316
 * Avi Tiwari tiwari.av@husky.neu.edu 001449863
-* Soumavo Guria guria.s@husky.neu.edu
+* Soumavo Guria guria.s@husky.neu.edu 001495565
 
 ### Instructions to create VPC, Subnets, Internet Gateways, Route Tables in the AWS using cloud formation stacks
 

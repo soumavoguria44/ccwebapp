@@ -10,11 +10,13 @@
 #
 # Jun 12 2019 -- Soumavo Guria  -- Initial Creation
 # Jun 13 2019 -- Soumavo Guria -- Modified
+# Jun 14 2019 -- Anurag Dhar	-- Modified Script bugs
 #
 # ********************************************************************************************
 
-echo "Please enter tag name of vpc to delete:"
-read tag_name
+read -p "Please enter tag name of vpc to delete:" tag_name
+# read -p "Please enter tag name of route table to delete: " route_tag
+
 
 echo -e "\n"
 echo " ************************************************** "
@@ -110,65 +112,6 @@ for subnet_id in ${subnet_ids}; do
 done
 
 
-# Deleting public route table
-
-step="Fetch: Public Route Table"
-
-echo " **** Fetching Public Route Table **** "
-
-route_table_ids=$(aws ec2 describe-route-tables \
---filters Name=vpc-id,Values=$vpc_id Name=tag:Name,Values=$tag_name \
---query 'RouteTables[].RouteTableId' --output text)
-
-flag=$?
-
-if [ -z  "$route_table_ids" ] || [ "$route_table_ids" = "None" ]
-then
-
-flag=1
-
-fi
-
-if [ $flag -ne 0 ]
-then
-
-	echo -e "\n"
-	echo " **************************************************** "
-	echo " **** Exiting: Failed at - $step with exit status: $flag **** "
-	echo " **************************************************** "
-	echo " ************ Teardown Process Complete ************* "
-	echo -e "\n"
-	exit 1
-fi
-
-echo " ******* Fetch Route Table Complete ******* "
-
-step="Delete: Public Route Table"
-
-echo " **** Deleting Route Table ************* "
-
-for route_table_id in ${route_table_ids}; do
-	aws ec2 delete-route-table --route-table-id $route_table_id
-
-	flag=$?
-
-	if [ $flag -ne 0 ]; then
-
-		echo -e "\n"
-		echo " **************************************************** "
-		echo " **** Exiting: Failed at - $step with exit status: $flag **** "
-		echo " **************************************************** "
-		echo " ************ Teardown Process Complete ************* "
-		echo -e "\n"
-		exit 1
-	else
-		echo " ******* Route Table ID: ${route_table_id} deleted ******** "
-	fi
-done
-
-flag=$?
-
-
 # Detach Internet Gateway
 
 step="Fetch: Internet Gateway"
@@ -248,6 +191,68 @@ for igw_id in ${igw_ids}; do
 		echo " ******* Internet Gateway ID: ${igw_id} deleted ******** "
 	fi
 done
+
+
+# Deleting public route table
+
+step="Fetch: Public Route Table"
+
+echo " **** Fetching Public Route Table **** "
+
+route_table_ids=$(aws ec2 describe-route-tables \
+--filters Name=vpc-id,Values=$vpc_id Name=tag:Name,Values="${tag_name}-myRT" \
+--query 'RouteTables[].RouteTableId' --output text)
+
+echo "$route_table_ids"
+
+flag=$?
+
+if [ -z  "$route_table_ids" ] || [ "$route_table_ids" = "None" ]
+then
+
+flag=1
+
+fi
+
+if [ $flag -ne 0 ]
+then
+
+	echo -e "\n"
+	echo " **************************************************** "
+	echo " **** Exiting: Failed at - $step with exit status: $flag **** "
+	echo " **************************************************** "
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
+	exit 1
+fi
+
+echo " ******* Fetch Route Table Complete ******* "
+
+step="Delete: Public Route Table"
+
+echo " **** Deleting Route Table ************* "
+
+for route_table_id in ${route_table_ids}; do
+	aws ec2 delete-route-table --route-table-id $route_table_id
+
+	flag=$?
+
+	if [ $flag -ne 0 ]; then
+		echo "if running"
+		echo -e "\n"
+		echo " **************************************************** "
+		echo " **** Exiting: Failed at - $step with exit status: $flag **** "
+		echo " **************************************************** "
+		echo " ************ Teardown Process Complete ************* "
+		echo -e "\n"
+		exit 1
+	else
+		echo "else running"
+		echo " ******* Route Table ID: ${route_table_id} deleted ******** "
+	fi
+done
+
+flag=$?
 
 
 # Deleting VPC
