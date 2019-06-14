@@ -1,9 +1,6 @@
 package com.csye6225.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Books")
@@ -24,9 +21,18 @@ public class Book {
     @Column(name="quantity")
     private int quantity;
 
+
+
+    @OneToOne(cascade= {CascadeType.ALL})
+    @JoinColumn(name="bookImage")
+    private BookImage bookImage;
+
     public Book(){
 
     }
+
+
+
 
     public String getId() {
         return id;
@@ -66,5 +72,14 @@ public class Book {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+
+    public BookImage getBookImage() {
+        return bookImage;
+    }
+
+    public void setBookImage(BookImage bookImage) {
+        this.bookImage = bookImage;
     }
 }

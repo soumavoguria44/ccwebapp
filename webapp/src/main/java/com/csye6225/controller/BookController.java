@@ -1,18 +1,26 @@
 package com.csye6225.controller;
 
 import com.csye6225.models.Book;
+import com.csye6225.models.BookImage;
 import com.csye6225.repository.BookRepository;
+import com.csye6225.repository.ImageRepository;
+import com.csye6225.services.ImageService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController("BookController")
@@ -20,6 +28,12 @@ public class BookController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private ImageService imageService;
 
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -61,14 +75,18 @@ public class BookController {
 
         JsonObject jsonObject = new JsonObject();
         try {
-//            Book book = new Book();
-
-            UUID id = UUID.randomUUID(); // Generating UUID for Book Id
-            book.setId(id.toString());
-            bookRepository.save(book);
-            String json = new Gson().toJson(book);
-            response.setStatus(HttpServletResponse.SC_CREATED);
-            return json;
+            if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
+                UUID id = UUID.randomUUID(); // Generating UUID for Book Id
+                book.setId(id.toString());
+                bookRepository.save(book);
+                String json = new Gson().toJson(book);
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                return json;
+            }
+            else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return jsonObject.toString();
+            }
         }
         catch (Exception ex){
             logger.error(ex.getMessage(), ex.getStackTrace());
@@ -94,12 +112,17 @@ public class BookController {
         try {
             Book book = bookRepository.findById(bookReq.getId());
             if (book != null) {
-                book.setTitle(bookReq.getTitle());
-                book.setAuthor(bookReq.getAuthor());
-                book.setIsbn(bookReq.getIsbn());
-                book.setQuantity(bookReq.getQuantity());
-                bookRepository.save(book);
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
+                    book.setTitle(bookReq.getTitle());
+                    book.setAuthor(bookReq.getAuthor());
+                    book.setIsbn(bookReq.getIsbn());
+                    book.setQuantity(bookReq.getQuantity());
+                    bookRepository.save(book);
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }
+                else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -176,5 +199,168 @@ public class BookController {
         return jsonObject.toString();
 
     }
+
+
+    /**
+     * Post method to post a image of a book by id
+     * @param "idBook"
+     * @param file
+     * @param response
+     * @return response status only
+     * @throws Exception
+     */
+
+    @RequestMapping(value = "/book/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public String ImageUpload(@PathVariable("idBook")String id, @RequestParam MultipartFile file, HttpServletResponse response) throws Exception {
+
+        JsonObject jsonObject = new JsonObject();
+
+        Book book = bookRepository.findById(id);
+        if(book!=null)
+        {
+                   if (imageService.fileCheck(file.getContentType()))
+                    {
+                            BookImage bookImage = new BookImage();
+                            String photoNewName =  imageService.generateFileName(file);
+
+                            bookImage.setUrl(photoNewName);
+
+                            UUID Id = UUID.randomUUID(); // Generating UUID for Bookimage Id
+                            bookImage.setId(Id.toString());
+
+                            book.setBookImage(bookImage);
+                            imageService.uploadFile(file,photoNewName);
+                            bookRepository.save(book);
+                        String json = new Gson().toJson(bookImage);
+
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        return json;
+                    }else
+                        {
+
+                        jsonObject.addProperty("message", "Select Correct format");
+
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+                        }
+
+
+        }else {
+
+                    jsonObject.addProperty("message", "Book not found!");
+                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+               }
+
+        return jsonObject.toString();
+    }
+
+
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String GetImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception {
+
+        JsonObject jsonObject = new JsonObject();
+        try {
+            Book book =bookRepository.findById(id);
+            BookImage bookImage = imageRepository.findById(idImage);
+            String json = new Gson().toJson(bookImage);
+
+            if (book!=null && bookImage != null) {
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                return json;
+            }else{
+
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return jsonObject.toString();
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex.getStackTrace());
+            jsonObject.addProperty("error", "Exception occured! Check log");
+            return jsonObject.toString();
+        }
+
+
+    }
+
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public String UpdateImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,@RequestParam MultipartFile file,HttpServletResponse response) throws Exception {
+
+        JsonObject jsonObject = new JsonObject();
+        try {
+            Book book = bookRepository.findById(id);
+            if (book != null) {
+
+                BookImage bookImage = imageRepository.findById(idImage);
+                if (bookImage != null) {
+
+                    String photoNewName = imageService.generateFileName(file);
+
+                    bookImage.setUrl(photoNewName);
+
+                    book.setBookImage(bookImage);
+                    imageService.uploadFile(file, photoNewName);
+
+                    bookRepository.save(book);
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+                } else {
+
+                            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                       }
+            } else {
+
+
+                jsonObject.addProperty("message", "Book not found!");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    }
+
+        }catch (Exception ex){
+            logger.error(ex.getMessage(), ex.getStackTrace());
+            jsonObject.addProperty("error", "Exception occured! Check log");
+        }
+        return jsonObject.toString();
+}
+
+
+
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public String DeleteImageById(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception{
+
+        JsonObject jsonObject = new JsonObject();
+        try {
+            Book book = bookRepository.findById(id);
+            if (book != null) {
+                BookImage bookImage = imageRepository.findById(idImage);
+                if (bookImage != null) {
+
+                    book.setBookImage(null);
+
+                    imageRepository.delete(bookImage);
+
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+                } else {
+
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+
+        }catch (Exception ex){
+            logger.error(ex.getMessage(), ex.getStackTrace());
+            jsonObject.addProperty("error", "Exception occured! Check log");
+        }
+
+        return jsonObject.toString();
+
+    }
+
 
 }
