@@ -25,6 +25,9 @@
         "Type": "AWS::EC2::VPC",
         "Properties": {
           "CidrBlock": { "Ref": "cidrBlock" },
+	"EnableDnsSupport":"true",
+	"EnableDnsHostnames":"true",
+	"InstanceTenancy":"default",	
           "Tags": [{ "Key": "Name", "Value": {"Fn::Join" : [ "-", [ { "Ref": "stackName" },"myVPC" ] ]} }]
         }
       },
@@ -112,7 +115,30 @@
         }
       }
     },
-    "Outputs": {
-
+"Outputs": {
+	"myVPC" : {
+		"Value" : { "Ref" : "myVPC" },
+		"Export" : {
+			"Name" : { "Fn::Sub" : "${AWS::StackName}-myVPC" }
+		}
+	},
+	"myPublicSubnet1" : {
+		"Value" : { "Ref" : "myPublicSubnet1" },
+		"Export" : {
+			"Name" : { "Fn::Sub" : "${AWS::StackName}-myPublicSubnet1" }
+		}
+	},
+	"myPublicSubnet2" : {
+		"Value" : { "Ref" : "myPublicSubnet2" },
+		"Export" : {
+			"Name" : { "Fn::Sub" : "${AWS::StackName}-myPublicSubnet2" }
+		}
+	},
+	"myPublicSubnet3" : {
+		"Value" : { "Ref" : "myPublicSubnet3" },
+		"Export" : {
+			"Name" : { "Fn::Sub" : "${AWS::StackName}-myPublicSubnet3" }
+		}
+	}
     }
 }
