@@ -45,7 +45,8 @@
                     }
                 ],
                 "KeyName": "csye6225"
-            }
+            } 
+            
         },
         "WebServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -161,7 +162,7 @@
                 "MasterUsername": "csye6225master",
                 "MasterUserPassword": "csye6225password",
                 "Engine": "MySQL",
-                "EngineVersion": "8.0.15",
+                "EngineVersion": "5.6.35",
                 "DBName": "csye6225",
                 "DBSubnetGroupName": {
                     "Ref": "dbSubnetGroup"

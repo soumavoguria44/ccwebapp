@@ -7,12 +7,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Profile("default")
 public class ImageService implements FileHandler{
 
 
+    private final static Logger logger = LoggerFactory.getLogger(ImageService.class);
 
     @Override
     public String uploadFile(MultipartFile multipartFile,String filePath) throws Exception {
@@ -25,6 +28,7 @@ public class ImageService implements FileHandler{
         } catch (Exception e) {
             throw e;
         }
+
 
         return filePath;
 
