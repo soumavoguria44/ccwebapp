@@ -1,33 +1,23 @@
 package com.csye6225.services;
 
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
-public class ImageService  {
-    private static final String PNG = "image/png";
-    private static final String JPG = "image/jpg";
-    private static final String JPEG = "image/jpeg";
-    public String generateFileName(MultipartFile multiPart) {
+@Profile("default")
+public class ImageService implements FileHandler{
 
 
-        String uploadDir = "/home/avitiwari/Desktop/cloud/csye6225/dev/";
+    private final static Logger logger = LoggerFactory.getLogger(ImageService.class);
 
-        return uploadDir + multiPart.getOriginalFilename().replace(" ", "_");
-
-    }
-
-    public boolean fileCheck(String filetype) {
-
-      return( filetype.equals(JPEG) || filetype.equals(JPG) || filetype.equals(PNG));
-
-
-    }
-
-
+    @Override
     public String uploadFile(MultipartFile multipartFile,String filePath) throws Exception {
 
         try {
@@ -39,7 +29,17 @@ public class ImageService  {
             throw e;
         }
 
+
         return filePath;
 
+    }
+
+    @Override
+    public String deleteFile(String fileLocation, String filePath) throws Exception {
+        File file = new File(fileLocation);
+        if (file.delete()) {
+            return "Successfully deleted";
+        }
+        return null;
     }
 }

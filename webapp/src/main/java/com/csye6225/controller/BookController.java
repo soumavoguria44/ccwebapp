@@ -4,6 +4,8 @@ import com.csye6225.models.Book;
 import com.csye6225.models.BookImage;
 import com.csye6225.repository.BookRepository;
 import com.csye6225.repository.ImageRepository;
+import com.csye6225.services.AwsFileHandler;
+import com.csye6225.services.FileHandler;
 import com.csye6225.services.ImageService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -32,8 +34,13 @@ public class BookController {
     @Autowired
     private ImageRepository imageRepository;
 
+
     @Autowired
-    private ImageService imageService;
+    private FileHandler fileHandler;
+
+    private static final String PNG = "image/png";
+    private static final String JPG = "image/jpg";
+    private static final String JPEG = "image/jpeg";
 
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -74,7 +81,7 @@ public class BookController {
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
 
         JsonObject jsonObject = new JsonObject();
-        try {
+      //  try {
             if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
                 UUID id = UUID.randomUUID(); // Generating UUID for Book Id
                 book.setId(id.toString());
@@ -87,12 +94,12 @@ public class BookController {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return jsonObject.toString();
             }
-        }
-        catch (Exception ex){
-            logger.error(ex.getMessage(), ex.getStackTrace());
-            jsonObject.addProperty("error", "Exception occured! Check log");
-            return jsonObject.toString();
-        }
+//        }
+//        catch (Exception ex){
+//            logger.error(ex.getMessage(), ex.getStackTrace());
+//            jsonObject.addProperty("error", "Exception occured! Check log");
+//            return jsonObject.toString();
+//        }
 
     }
 
@@ -219,18 +226,20 @@ public class BookController {
         Book book = bookRepository.findById(id);
         if(book!=null)
         {
-                   if (imageService.fileCheck(file.getContentType()))
+                   if (fileCheck(file.getContentType()))
                     {
                             BookImage bookImage = new BookImage();
-                            String photoNewName =  imageService.generateFileName(file);
+                            String photoNewName =  generateFileName(file);
 
-                            bookImage.setUrl(photoNewName);
+
 
                             UUID Id = UUID.randomUUID(); // Generating UUID for Bookimage Id
                             bookImage.setId(Id.toString());
 
                             book.setBookImage(bookImage);
-                            imageService.uploadFile(file,photoNewName);
+                            photoNewName = fileHandler.uploadFile(file,photoNewName);
+
+                            bookImage.setUrl(photoNewName);
                             bookRepository.save(book);
                         String json = new Gson().toJson(bookImage);
 
@@ -297,12 +306,12 @@ public class BookController {
                 BookImage bookImage = imageRepository.findById(idImage);
                 if (bookImage != null) {
 
-                    String photoNewName = imageService.generateFileName(file);
+                    String photoNewName = generateFileName(file);
 
                     bookImage.setUrl(photoNewName);
 
                     book.setBookImage(bookImage);
-                    imageService.uploadFile(file, photoNewName);
+                    fileHandler.uploadFile(file, photoNewName);
 
                     bookRepository.save(book);
                     response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -361,6 +370,23 @@ public class BookController {
         return jsonObject.toString();
 
     }
+    public String generateFileName(MultipartFile multiPart) {
 
+        String uploadDir = System.getProperty("user.home") + "/Desktop/Images/";
+        File f = new File(uploadDir);
+        if (!f.exists()) {
+            f.mkdir();
+
+        }
+
+        return uploadDir + multiPart.getOriginalFilename().replace(" ", "_");
+    }
+
+    public boolean fileCheck(String filetype) {
+
+        return( filetype.equals(JPEG) || filetype.equals(JPG) || filetype.equals(PNG));
+
+
+    }
 
 }

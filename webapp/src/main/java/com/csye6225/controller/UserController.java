@@ -69,7 +69,7 @@ public class UserController {
     public String Register(HttpServletRequest request, HttpServletResponse response, @RequestBody User user){
 
         JsonObject jsonObject = new JsonObject();
-        try {
+     //   try {
             // User user = new User();
             EmailAndPasswordLogics emailPass = new EmailAndPasswordLogics();
 
@@ -97,12 +97,12 @@ public class UserController {
                 jsonObject.addProperty("message", "Please enter a acceptable password");
                 response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
             }
-        }
-        catch (Exception ex){
-            logger.error(ex.getMessage(), ex.getStackTrace());
-            jsonObject.addProperty("error", "Exception occured! Check log");
-            return jsonObject.toString();
-        }
+//        }
+//        catch (Exception ex){
+//            logger.error(ex.getMessage(), ex.getStackTrace());
+//            jsonObject.addProperty("error", "Exception occured! Check log");
+//            return jsonObject.toString();
+//        }
         return jsonObject.toString();
     }
 }
