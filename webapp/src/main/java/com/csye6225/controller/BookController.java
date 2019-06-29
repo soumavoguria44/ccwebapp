@@ -81,7 +81,7 @@ public class BookController {
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
 
         JsonObject jsonObject = new JsonObject();
-        try {
+      //  try {
             if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
                 UUID id = UUID.randomUUID(); // Generating UUID for Book Id
                 book.setId(id.toString());
@@ -94,12 +94,12 @@ public class BookController {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return jsonObject.toString();
             }
-        }
-        catch (Exception ex){
-            logger.error(ex.getMessage(), ex.getStackTrace());
-            jsonObject.addProperty("error", "Exception occured! Check log");
-            return jsonObject.toString();
-        }
+//        }
+//        catch (Exception ex){
+//            logger.error(ex.getMessage(), ex.getStackTrace());
+//            jsonObject.addProperty("error", "Exception occured! Check log");
+//            return jsonObject.toString();
+//        }
 
     }
 
@@ -231,13 +231,15 @@ public class BookController {
                             BookImage bookImage = new BookImage();
                             String photoNewName =  generateFileName(file);
 
-                            bookImage.setUrl(photoNewName);
+
 
                             UUID Id = UUID.randomUUID(); // Generating UUID for Bookimage Id
                             bookImage.setId(Id.toString());
 
                             book.setBookImage(bookImage);
-                            fileHandler.uploadFile(file,photoNewName);
+                            photoNewName = fileHandler.uploadFile(file,photoNewName);
+
+                            bookImage.setUrl(photoNewName);
                             bookRepository.save(book);
                         String json = new Gson().toJson(bookImage);
 
