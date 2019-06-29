@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-
+#Enter app name
 read -p "Enter Stack Name: " applicationStackName
 
 
