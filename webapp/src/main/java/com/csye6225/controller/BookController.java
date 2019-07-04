@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +57,9 @@ public class BookController {
 
         try {
             List<Book> books = (List) bookRepository.findAll();
+            for (Book book : books){
+                book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
+            }
             String json = new Gson().toJson(books);
             return json;
         }
@@ -156,6 +160,7 @@ public class BookController {
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(id);
+            book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
             String json = new Gson().toJson(book);
             if (book != null) {
 
@@ -229,18 +234,19 @@ public class BookController {
                    if (fileCheck(file.getContentType()))
                     {
                             BookImage bookImage = new BookImage();
-                            String photoNewName =  generateFileName(file);
+                         //   String photoNewName =  generateFileName(file);
 
-
+                          String photoNewName =  file.getOriginalFilename();
 
                             UUID Id = UUID.randomUUID(); // Generating UUID for Bookimage Id
                             bookImage.setId(Id.toString());
 
                             book.setBookImage(bookImage);
-                            photoNewName = fileHandler.uploadFile(file,photoNewName);
 
-                            bookImage.setUrl(photoNewName);
-                            bookRepository.save(book);
+                        String filePath = fileHandler.uploadFile(file,photoNewName);
+
+                        bookImage.setUrl(filePath);
+                        bookRepository.save(book);
                         String json = new Gson().toJson(bookImage);
 
                         response.setStatus(HttpServletResponse.SC_OK);
@@ -274,6 +280,9 @@ public class BookController {
         try {
             Book book =bookRepository.findById(id);
             BookImage bookImage = imageRepository.findById(idImage);
+
+            bookImage.setUrl(fileHandler.getFile(bookImage));
+
             String json = new Gson().toJson(bookImage);
 
             if (book!=null && bookImage != null) {
@@ -345,9 +354,20 @@ public class BookController {
             Book book = bookRepository.findById(id);
             if (book != null) {
                 BookImage bookImage = imageRepository.findById(idImage);
+                logger.info("before");
                 if (bookImage != null) {
+                    logger.info("inside");
 
+                    fileHandler.deleteFile(bookImage);
+                    logger.info("After");
+
+//                    File f = new File(bookImage.getUrl());
+//                    if (f.exists()){
+//                        f.delete();
+//                    }
                     book.setBookImage(null);
+
+
 
                     imageRepository.delete(bookImage);
 
@@ -372,12 +392,15 @@ public class BookController {
     }
     public String generateFileName(MultipartFile multiPart) {
 
+
         String uploadDir = System.getProperty("user.home") + "/Desktop/Images/";
         File f = new File(uploadDir);
         if (!f.exists()) {
             f.mkdir();
 
+
         }
+        logger.info(uploadDir);
 
         return uploadDir + multiPart.getOriginalFilename().replace(" ", "_");
     }
