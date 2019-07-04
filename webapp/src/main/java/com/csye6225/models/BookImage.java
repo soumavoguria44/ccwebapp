@@ -4,6 +4,7 @@ package com.csye6225.models;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
+import java.sql.Blob;
 
 @Entity
 @Table(name = "BookCover")
@@ -16,23 +17,8 @@ public class BookImage {
     @Column(name="path")
     private String url;
 
-
-//    @Transient
-//    private MultipartFile photo;
-
-
-
     public BookImage(){}
 
-
-//
-//    public MultipartFile getPhoto() {
-//        return photo;
-//    }
-//
-//    public void setPhoto(MultipartFile photo) {
-//        this.photo = photo;
-//    }
 
     public String getId() {
         return id;
@@ -49,4 +35,12 @@ public class BookImage {
     public void setUrl(String url) {
         this.url = url;
     }
+
+//    public Blob getUrl() {
+//        return url;
+//    }
+//
+//    public void setUrl(Blob url) {
+//        this.url = url;
+//    }
 }
