@@ -47,6 +47,40 @@
             }
 },
 
+"CodeDeployEC2S3": {
+              "Type" : "AWS::IAM::ManagedPolicy",
+              "Properties" : {
+              "ManagedPolicyName" : "CodeDeploy-EC2-S3",
+              "PolicyDocument" : {
+                "Version" : "2012-10-17",
+                "Statement": [ {
+                "Effect" : "Allow",
+                "Action" : [
+                  "s3:Get*",
+                  "s3:List*"
+             ],
+                "Resource" : [{
+                  "Fn::Join": [
+                      "",
+                      [
+                          "arn:aws:s3:::",
+                          {
+                              "Ref": "S3CodeBucket"
+                          },
+                          "/*"
+                      ]
+                  ]},
+                  "arn:aws:s3:::aws-codedeploy-us-east-2/*",
+                  "arn:aws:s3:::aws-codedeploy-us-east-1/*"
+
+
+                ]
+             } ]
+           }
+         }
+},
+
+
 "CirlceCICodeDeploy": {
            "Type": "AWS::IAM::ManagedPolicy",
            "Properties": {
