@@ -85,9 +85,10 @@
                                       "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -DendpointUrl=https://s3.us-east-1.amazonaws.com\\\"\" >> /opt/tomcat/bin/setenv.sh "
                                   ]
                               ]
-                          },
+                          }
                         ]
-            }    
+                      ]
+            }
         },
         "WebServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -226,7 +227,7 @@
         "CodeDeployApplication": {
           "Type": "AWS::CodeDeploy::Application",
           "Properties": {
-            "ApplicationName": "csye6225-webapp"
+            "ApplicationName": "csye6225-webapp",
             "ComputePlatform": " EC2/On-premises"
           }
         },
@@ -258,4 +259,5 @@
           }
         }
     }
+}
 }
