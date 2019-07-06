@@ -47,90 +47,10 @@
             }
 },
 
-"CodeDeployEC2S3": {
-              "Type" : "AWS::IAM::ManagedPolicy",
-              "Properties" : {
-              "ManagedPolicyName" : "CodeDeploy-EC2-S3",
-              "PolicyDocument" : {
-                "Version" : "2012-10-17",
-                "Statement": [ {
-                "Effect" : "Allow",
-                "Action" : [
-                  "s3:Get*",
-                  "s3:List*"
-             ],
-                "Resource" : [{
-                  "Fn::Join": [
-                      "",
-                      [
-                          "arn:aws:s3:::",
-                          {
-                              "Ref": "S3CodeBucket"
-                          },
-                          "/*"
-                      ]
-                  ]},
-                  "arn:aws:s3:::aws-codedeploy-us-east-2/*",
-                  "arn:aws:s3:::aws-codedeploy-us-east-1/*"
 
 
-                ]
-             } ]
-           }
-         }
-},
 
 
-"CirlceCICodeDeploy": {
-           "Type": "AWS::IAM::ManagedPolicy",
-           "Properties": {
-               "ManagedPolicyName": "CirlceCI-Code-Deploy",
-               "Description": "CodeDeploy to deploy to EC2",
-               "Path": "/",
-               "PolicyDocument": {
-                   "Version": "2012-10-17",
-                   "Statement": [
-                       {
-                           "Effect": "Allow",
-                           "Action": [
-                               "codedeploy:RegisterApplicationRevision",
-                               "codedeploy:GetApplicationRevision"
-                           ],
-                           "Resource": [
-                               "arn:aws:codedeploy:us-east-1:*:application:csye6225-webapp"
-                           ]
-                       },
-                       {
-                           "Effect": "Allow",
-                           "Action": [
-                               "codedeploy:CreateDeployment",
-                               "codedeploy:GetDeployment"
-                           ],
-                           "Resource": [
-                               "*"
-                           ]
-                       },
-                       {
-                           "Effect": "Allow",
-                           "Action": [
-                               "codedeploy:GetDeploymentConfig"
-                           ],
-                           "Resource": [
-                               "arn:aws:codedeploy:us-east-1:*:deploymentconfig:CodeDeployDefault.OneAtATime",
-                               "arn:aws:codedeploy:us-east-1:*:deploymentconfig:CodeDeployDefault.HalfAtATime",
-                               "arn:aws:codedeploy:us-east-1:*:deploymentconfig:CodeDeployDefault.AllAtOnce"
-                           ]
-                       }
-                   ]
-},
-
-"Users": [
-                    {
-                        "Ref": "CircleCIUser"
-                    }
-                ]
-            }
-},
 "circleciEc2Ami": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
@@ -188,7 +108,153 @@
                     }
                 ]
             }
-}
+},
+
+"CirlceCICodeDeploy": {
+           "Type": "AWS::IAM::ManagedPolicy",
+           "Properties": {
+               "ManagedPolicyName": "CirlceCI-Code-Deploy",
+               "Description": "CodeDeploy to deploy to EC2",
+               "Path": "/",
+               "PolicyDocument": {
+                   "Version": "2012-10-17",
+                   "Statement": [
+                       {
+                           "Effect": "Allow",
+                           "Action": [
+                               "codedeploy:RegisterApplicationRevision",
+                               "codedeploy:GetApplicationRevision"
+                           ],
+                           "Resource": [
+                               "arn:aws:codedeploy:us-east-1:*:application:csye6225-webapp"
+                           ]
+                       },
+                       {
+                           "Effect": "Allow",
+                           "Action": [
+                               "codedeploy:CreateDeployment",
+                               "codedeploy:GetDeployment"
+                           ],
+                           "Resource": [
+                               "*"
+                           ]
+                       },
+                       {
+                           "Effect": "Allow",
+                           "Action": [
+                               "codedeploy:GetDeploymentConfig"
+                           ],
+                           "Resource": [
+                               "arn:aws:codedeploy:us-east-1:*:deploymentconfig:CodeDeployDefault.OneAtATime",
+                               "arn:aws:codedeploy:us-east-1:*:deploymentconfig:CodeDeployDefault.HalfAtATime",
+                               "arn:aws:codedeploy:us-east-1:*:deploymentconfig:CodeDeployDefault.AllAtOnce"
+                           ]
+                       }
+                   ]
+},
+
+"Users": [
+                    {
+                        "Ref": "CircleCIUser"
+                    }
+                ]
+            }
+},
+
+
+
+"CodeDeployEC2ServiceRole": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+      "RoleName" :"CodeDeployEC2ServiceRole",
+      "AssumeRolePolicyDocument": {
+        "Version" : "2012-10-17",
+            "Statement": [ {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [ "ec2.amazonaws.com" ]
+                  },
+                    "Action": [ "sts:AssumeRole" ]
+                  }]
+                },
+                 "Path": "/"
+             }
+ },
+ "RolePolicies": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+      "ManagedPolicyName": "CodeDeploy-EC2-S3",
+      "PolicyDocument": {
+         "Version" : "2012-10-17",
+         "Statement": [ {
+            "Effect": "Allow",
+            "Action": [
+              "s3:Get*",
+              "s3:List*"
+         ],
+            "Resource": [{
+              "Fn::Join": [
+                  "",
+                  [
+                      "arn:aws:s3:::",
+                      {
+                          "Ref": "S3CodeBucket"
+                      },
+                      "/*"
+                  ]
+              ]},
+              "arn:aws:s3:::aws-codedeploy-us-east-2/*",
+              "arn:aws:s3:::aws-codedeploy-us-east-1/*"
+
+
+            ]
+         } ]
+      },
+      "Roles": [ {
+         "Ref": "CodeDeployEC2ServiceRole"
+      } ]
+   }
+},
+
+
+
+"RootInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+      "Path": "/",
+      "Roles": [ {
+         "Ref": "CodeDeployEC2ServiceRole"
+         } ]
+      }
+   },
+
+"CodeDeployServiceRole": {
+		"Type": "AWS::IAM::Role",
+		"Properties": {
+      "RoleName" :"CodeDeployServiceRole",
+      "Path": "/",
+      "ManagedPolicyArns": [
+				"arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+			],
+			"AssumeRolePolicyDocument": {
+				"Version": "2012-10-17",
+				"Statement": [
+					{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": [
+								"ec2.amazonaws.com"
+							]
+						},
+						"Action": [
+							"sts:AssumeRole"
+						]
+					}
+				]
+			}
+		}
+	}
+
 }
 
 }
