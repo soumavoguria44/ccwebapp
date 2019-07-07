@@ -73,9 +73,10 @@
             "UserData": {
                    "Fn::Base64": {
                        "Fn::Join": [
-                           "\n",
+                           "",
                         [
                           "#!/bin/bash -xe ",
+                          "sudo systemctl stop tomcat\n",
                           "cd /opt/tomcat",
                           "sudo chgrp -R tomcat /opt/tomcat",
                           "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh",
@@ -83,7 +84,7 @@
                               "Fn::Join": [
                                   "",
                                   [
-                                      "echo 'JAVA_OPTS=\"${JAVA_OPTS} -Durl=jdbc:mysql://",
+                                      "echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=jdbc:mysql://",
                                       {
                                           "Fn::GetAtt": [
                                               "MyRDSDB",
@@ -107,9 +108,10 @@
                                   "",
                                   [
                                       "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -DendpointUrl=https://s3.us-east-1.amazonaws.com\\\"\" >> /opt/tomcat/bin/setenv.sh "
+                                      
                                   ]
                               ]
-                          }
+                          },
                         ]
                        ]
             }   } 
@@ -230,7 +232,7 @@
           "Type": "AWS::CodeDeploy::Application",
           "Properties": {
             "ApplicationName": "csye6225-webapp",
-            "ComputePlatform": " EC2/On-premises"
+            "ComputePlatform": "Server"
           }
         },
         "DeploymentGroup": {
@@ -243,7 +245,7 @@
             "DeploymentGroupName": "csye6225-webapp-deployment",
             "DeploymentStyle" : {
               "DeploymentType": "IN_PLACE",
-              "DeploymentOption": "WITH_TRAFFIC_CONTROL"
+              "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
             },
             "AutoRollbackConfiguration": {
                 "Events": [
@@ -257,7 +259,7 @@
                 "Value": "EC2Instance"
               }
             ],
-            "ServiceRoleArn": {"Fn::ImportValue" : "csye6225-cicd-codedeploy-service-role" }
+            "ServiceRoleArn": {"Fn::ImportValue" : "CodeDeployServiceRole" }
           }
         }
     }
