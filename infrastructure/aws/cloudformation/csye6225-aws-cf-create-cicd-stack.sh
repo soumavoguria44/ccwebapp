@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 
-echo "Please enter policy stack name"
-
-read  PolicyStack
+read -p "Please enter policy stack name : " PolicyStack
 
 aws_domain_name=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
 bucketName="code-deploy.${aws_domain_name:0:-1}"

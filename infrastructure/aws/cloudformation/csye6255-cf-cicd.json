@@ -243,7 +243,7 @@
 						"Effect": "Allow",
 						"Principal": {
 							"Service": [
-								"ec2.amazonaws.com"
+								"codedeploy.amazonaws.com"
 							]
 						},
 						"Action": [
@@ -255,6 +255,13 @@
 		}
 	}
 
+},
+"Outputs": {
+    "CodeDeployServiceRole" : {
+        "Value" : { "Fn::GetAtt" : ["CodeDeployServiceRole","Arn"]  },
+        "Export" : {
+            "Name" : "CodeDeployServiceRole"
+        }
+    }
 }
-
 }
