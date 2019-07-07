@@ -90,7 +90,7 @@
                                   [
                                       {"Fn::Join":[
                                         "",
-                                        ["echo export JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "s3bucketName"}, " "]]},
+                                        ["echo JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "s3bucketName"}, " "]]},
 
 
                                       "-Dspring.datasource.url=jdbc:mysql://",
@@ -111,7 +111,10 @@
                                       "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.profiles.active=dev\\\"\" >> /opt/tomcat/bin/setenv.sh "
                                   ]
                               ]
-                          }
+                          },
+                          "echo \"export JAVA_OPTS\" >> /opt/tomcat/bin/setenv.sh\n",
+                          "sudo chmod +x /opt/tomcat/bin/setenv.sh\n",
+                          "sudo systemctl start tomcat"
                         ]
                        ]
             }   }
