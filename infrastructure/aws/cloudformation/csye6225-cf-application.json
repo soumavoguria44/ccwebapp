@@ -7,6 +7,10 @@
         },
         "AMI": {
             "Type": "String"
+        },
+        "s3bucketName": {
+            "Description": "s3bucketName for web",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -69,7 +73,7 @@
                     }
                 ],
                 "KeyName": "csye6225",
-            
+
             "UserData": {
                    "Fn::Base64": {
                        "Fn::Join": [
@@ -84,7 +88,11 @@
                               "Fn::Join": [
                                   "",
                                   [
-                                      "echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=jdbc:mysql://",
+                                      {"Fn::Join":["", ["echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "stackName"}, " "]]}
+
+                                  ],
+                                  [
+                                      "-Dspring.datasource.url=jdbc:mysql://",
                                       {
                                           "Fn::GetAtt": [
                                               "MyRDSDB",
@@ -102,19 +110,10 @@
                                       "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.profiles.active=dev\\\"\" >> /opt/tomcat/bin/setenv.sh "
                                   ]
                               ]
-                          },
-                          {
-                              "Fn::Join": [
-                                  "",
-                                  [
-                                      "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -DendpointUrl=https://s3.us-east-1.amazonaws.com\\\"\" >> /opt/tomcat/bin/setenv.sh "
-                                      
-                                  ]
-                              ]
-                          },
+                          }
                         ]
                        ]
-            }   } 
+            }   }
         }
     },
         "WebServerSecurityGroup": {
@@ -227,7 +226,7 @@
                 ]
             }
         },
-        
+
         "CodeDeployApplication": {
           "Type": "AWS::CodeDeploy::Application",
           "Properties": {
@@ -264,6 +263,3 @@
         }
     }
 }
-
-
-
