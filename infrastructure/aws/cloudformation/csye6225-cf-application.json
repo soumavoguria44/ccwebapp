@@ -79,45 +79,20 @@
                        "Fn::Join": [
                            "",
                         [
-                          "#!/bin/bash -xe ",
+                          "#!/bin/bash\n",
+                          "sudo su\n",
                           "sudo systemctl stop tomcat\n",
-                          "cd /opt/tomcat",
-                          "sudo chgrp -R tomcat /opt/tomcat",
-                          "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh",
-                          {
-                              "Fn::Join": [
-                                  "",
-                                  [
-                                      {"Fn::Join":[
-                                        "",
-                                        ["echo JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "s3bucketName"}, " "]]},
-
-
-                                      "-Dspring.datasource.url=jdbc:mysql://",
-                                      {
-                                          "Fn::GetAtt": [
-                                              "MyRDSDB",
-                                              "Endpoint.Address"
-                                          ]
-                                      },
-                                      ":3306/csye6225\"'>> /opt/tomcat/bin/setenv.sh \n"
-                                  ]
-                              ]
-                          },
-                          {
-                              "Fn::Join": [
-                                  "",
-                                  [
-                                      "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.profiles.active=dev\\\"\" >> /opt/tomcat/bin/setenv.sh "
-                                  ]
-                              ]
-                          },
+                          "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh\n",
+                          "echo \"\nJAVA_OPTS=\\$JAVA_OPTS\" >>/opt/tomcat/bin/setenv.sh\n",
+                          "echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.datasource.url=",{"Fn::GetAtt":["MyRDSDB","Endpoint.Address"]},
+                          " -Dspring.bucket.name=",{ "Ref": "s3bucketName"},"\"\\\" >>/opt/tomcat/bin/setenv.sh\n",
                           "echo \"export JAVA_OPTS\" >> /opt/tomcat/bin/setenv.sh\n",
                           "sudo chmod +x /opt/tomcat/bin/setenv.sh\n",
                           "sudo systemctl start tomcat"
                         ]
                        ]
-            }   }
+                     }
+                   }
         }
     },
         "WebServerSecurityGroup": {
