@@ -88,7 +88,7 @@
                               "Fn::Join": [
                                   "",
                                   [
-                                      {"Fn::Join":["", ["echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "stackName"}, " "]]}
+                                      {"Fn::Join":["", ["echo ' export JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "s3bucketName"}, " "]]}
 
                                   ],
                                   [

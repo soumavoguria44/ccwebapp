@@ -11,8 +11,8 @@ read networkStackName
 echo "enter your AMI"
 read ami
 
-# echo "enter your S3bucket"
-# read bucket
+echo "enter your S3bucket"
+read bucket
 
 
 aws cloudformation create-stack \
@@ -21,6 +21,7 @@ aws cloudformation create-stack \
 --parameters \
 ParameterKey=networkStackName,ParameterValue=$networkStackName \
 ParameterKey=AMI,ParameterValue=$ami \
+ParameterKey=s3bucketName,ParameterValue=$bucket \
 # ParameterKey=AttachmentsBucketName,ParameterValue=$bucket \
 # Waiting for the stack to get created
 echo "Waiting on ${applicationStackName} for create completion..."
