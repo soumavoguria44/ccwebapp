@@ -88,10 +88,11 @@
                               "Fn::Join": [
                                   "",
                                   [
-                                      {"Fn::Join":["", ["echo ' export JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "s3bucketName"}, " "]]}
+                                      {"Fn::Join":[
+                                        "",
+                                        ["echo export JAVA_OPTS=\"${JAVA_OPTS} -Dspring.bucket.name=", { "Ref": "s3bucketName"}, " "]]},
 
-                                  ],
-                                  [
+
                                       "-Dspring.datasource.url=jdbc:mysql://",
                                       {
                                           "Fn::GetAtt": [
