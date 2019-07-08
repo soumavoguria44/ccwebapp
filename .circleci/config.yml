@@ -11,7 +11,7 @@ jobs:
             cd webapp
             pwd
             sudo apt install maven
-            mvn clean install
+            mvn clean package
             cd target
             ls -al
             cd ../..
