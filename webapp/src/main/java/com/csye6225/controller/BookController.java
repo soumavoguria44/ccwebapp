@@ -57,9 +57,9 @@ public class BookController {
 
         try {
             List<Book> books = (List) bookRepository.findAll();
-            for (Book book : books){
-                book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
-            }
+//            for (Book book : books){
+//                book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
+//            }
             String json = new Gson().toJson(books);
             return json;
         }
