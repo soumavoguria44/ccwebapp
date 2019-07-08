@@ -8,28 +8,12 @@ jobs:
       - run:
           name: Build Artifact
           command: |
-                   pwd
-                   ls
-      - run: mvn clean package -DskipTests
-      - run:
-          name: checkwar path
-          command: |
-                   pwd
-                   ls -al
-                   pwd
-                   cd target
-                   pwd
-                   ls -al
-      - run:
-          name: checkpath
-          command: |
-                   cd target
-                   ls -la
             cd webapp
-            ./maven clean install war
-            cd build/libs
+            ./mvnw clean install
+            cd target
             ls -al
-            cd ../../..
+            cd ../..
+            pwd
       - run:
           name: Zip Artifact
           command: |
@@ -38,7 +22,6 @@ jobs:
             ls -al
             mkdir -p codedeploy_artifact
             cp infrastructure/aws/codedeploy/*.sh .
-            cp target/ROOT.war .
             pwd
             ls -al
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/target/ROOT.war *.sh *.yml

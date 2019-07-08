@@ -45,13 +45,9 @@ public class AwsFileHandler implements FileHandler {
 
     @PostConstruct
     private void initializeAmazon() {
-        this.s3client = AmazonS3ClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain())
-                                .build();
+        this.s3client = AmazonS3ClientBuilder.standard().build();
 
     }
-
-
-
 
     @Override
     public String uploadFile(MultipartFile multipartFile, String fileName) throws Exception {
@@ -98,9 +94,6 @@ public class AwsFileHandler implements FileHandler {
         long expTimeMillis = expiration.getTime();
         expTimeMillis += 1000 * 120;
         expiration.setTime(expTimeMillis);
-
-
-
 
         s3client.generatePresignedUrl(bucketName,name,expiration);
         logger.info(String.valueOf(s3client.generatePresignedUrl(bucketName,name,expiration)));
