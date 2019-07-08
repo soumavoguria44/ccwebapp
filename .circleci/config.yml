@@ -9,6 +9,7 @@ jobs:
           name: Build Artifact
           command: |
             cd webapp
+            pwd
             sudo apt install maven
             mvn clean install
             cd target
