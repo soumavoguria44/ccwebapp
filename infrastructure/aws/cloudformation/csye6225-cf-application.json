@@ -11,15 +11,8 @@
         "s3bucketName": {
             "Description": "s3bucketName for web",
             "Type": "String"
-        },
-        "TagKey": {
-            "Type": "String",
-            "Default": "csye6225-EC2-Key"
-        },
-        "TagValue": {
-            "Type": "String",
-            "Default": "csye6225-EC2"
         }
+        
     },
     "Resources": {
         "MyRDSDB": {
@@ -75,12 +68,8 @@
                 ],
                 "Tags": [
                     {
-                        "Key": {
-                            "Ref": "TagKey"
-                        },
-                        "Value": {
-                            "Ref": "TagValue"
-                        }
+                        "Key": "Name",
+                        "Value": "EC2-Server"
                     }
                 ],
                 "BlockDeviceMappings": [
@@ -103,10 +92,10 @@
                           "#!/bin/bash\n",
                           "sudo su\n",
                           "sudo systemctl stop tomcat\n",
-                          "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh\n",
+                          "echo \"#!/bin/sh\n\" >> /opt/tomcat/bin/setenv.sh\n",
                           "echo \"\nJAVA_OPTS=\\$JAVA_OPTS\" >>/opt/tomcat/bin/setenv.sh\n",
-                          "echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.profiles.active=dev -Ddomain=",
-                          {"Fn::GetAtt":["MyRDSDB","Endpoint.Address"]}, "/csye6225",
+                          "echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dprofile=dev -Ddomain=",
+                          {"Fn::GetAtt":["MyRDSDB","Endpoint.Address"]},
                           " -Ddatabase=csye6225 -DsqlUsername=csye6225master -DsqlPassword=csye6225password",
                           " -Dspring.bucket.name=",{ "Ref": "s3bucketName"},"\"\\\" >>/opt/tomcat/bin/setenv.sh\n",
                           "echo \"export JAVA_OPTS\" >> /opt/tomcat/bin/setenv.sh\n",
@@ -255,12 +244,8 @@
             },
             "Ec2TagFilters": [
                 {
-                    "Key": {
-                        "Ref": "TagKey"
-                    },
-                    "Value": {
-                        "Ref": "TagValue"
-                    },
+                    "Key": "Name",
+                    "Value": "EC2-Server",
                     "Type": "KEY_AND_VALUE"
                 }
             ],
