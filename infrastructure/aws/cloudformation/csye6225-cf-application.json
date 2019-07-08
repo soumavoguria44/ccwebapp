@@ -11,6 +11,14 @@
         "s3bucketName": {
             "Description": "s3bucketName for web",
             "Type": "String"
+        },
+        "TagKey": {
+            "Type": "String",
+            "Default": "csye6225-EC2-Key"
+        },
+        "TagValue": {
+            "Type": "String",
+            "Default": "csye6225-EC2"
         }
     },
     "Resources": {
@@ -62,6 +70,16 @@
                             "Fn::ImportValue": {
                                 "Fn::Sub": "${networkStackName}-myPublicSubnet1"
                             }
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": {
+                            "Ref": "TagKey"
+                        },
+                        "Value": {
+                            "Ref": "TagValue"
                         }
                     }
                 ],
@@ -236,11 +254,15 @@
                 ]
             },
             "Ec2TagFilters": [
-              {
-                "Type": "KEY_AND_VALUE",
-                "Key": "Name",
-                "Value": "EC2Instance"
-              }
+                {
+                    "Key": {
+                        "Ref": "TagKey"
+                    },
+                    "Value": {
+                        "Ref": "TagValue"
+                    },
+                    "Type": "KEY_AND_VALUE"
+                }
             ],
             "ServiceRoleArn": {"Fn::ImportValue" : "CodeDeployServiceRole" }
           }

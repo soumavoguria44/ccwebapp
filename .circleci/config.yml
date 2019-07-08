@@ -63,7 +63,7 @@ jobs:
             --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name csye6225-webapp-deployment \
-            --s3-location bucket=${bucketName},bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
+            --s3-location bucket=${bucketName},bundleType=zip,key=csye6225-EC2-Key-${CIRCLE_BUILD_NUM}.zip \
             --auto-rollback-configuration enabled=true,events=DEPLOYMENT_FAILURE,DEPLOYMENT_STOP_ON_ALARM,DEPLOYMENT_STOP_ON_REQUEST)
             echo "$deploymentId"              
       - run:
