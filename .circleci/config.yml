@@ -40,6 +40,9 @@ jobs:
       - run:
           name: install pip
           command: |
+            sudo apt update
+            sudo apt-get install python3
+            python3 --version
             sudo apt install python3-pip
             pip3 --version
       - run:
