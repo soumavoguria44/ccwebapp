@@ -12,6 +12,7 @@
             "Description": "s3bucketName for web",
             "Type": "String"
         }
+        
     },
     "Resources": {
         "MyRDSDB": {
@@ -65,6 +66,12 @@
                         }
                     }
                 ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "EC2-Server"
+                    }
+                ],
                 "BlockDeviceMappings": [
                     {
                         "DeviceName": "/dev/sda1",
@@ -82,14 +89,14 @@
                        "Fn::Join": [
                            "",
                         [
-                          "#!/bin/bash\n",
+                         "#!/bin/bash\n",
                           "sudo su\n",
                           "sudo systemctl stop tomcat\n",
-                          "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh\n",
+                          "echo \"#!/bin/sh\n\" >> /opt/tomcat/bin/setenv.sh\n",
                           "echo \"\nJAVA_OPTS=\\$JAVA_OPTS\" >>/opt/tomcat/bin/setenv.sh\n",
-                          "echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.profiles.active=dev -Durl=jdbc:mysql://",
-                          {"Fn::GetAtt":["MyRDSDB","Endpoint.Address"]}, ":3306/csye6225",
-                          " -DsqlUsername=csye6225master -DsqlPassword=csye6225password",
+                          "echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dprofile=dev -Ddomain=",
+                          {"Fn::GetAtt":["MyRDSDB","Endpoint.Address"]},
+                          " -Ddatabase=csye6225 -DsqlUsername=csye6225master -DsqlPassword=csye6225password",
                           " -Dspring.bucket.name=",{ "Ref": "s3bucketName"},"\"\\\" >>/opt/tomcat/bin/setenv.sh\n",
                           "echo \"export JAVA_OPTS\" >> /opt/tomcat/bin/setenv.sh\n",
                           "sudo chmod +x /opt/tomcat/bin/setenv.sh\n",
@@ -236,11 +243,11 @@
                 ]
             },
             "Ec2TagFilters": [
-              {
-                "Type": "KEY_AND_VALUE",
-                "Key": "Name",
-                "Value": "EC2Instance"
-              }
+                {
+                    "Key": "Name",
+                    "Value": "EC2-Server",
+                    "Type": "KEY_AND_VALUE"
+                }
             ],
             "ServiceRoleArn": {"Fn::ImportValue" : "CodeDeployServiceRole" }
           }

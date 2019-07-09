@@ -11,7 +11,7 @@ jobs:
             cd webapp
             pwd
             sudo apt install maven
-            mvn clean package
+            mvn clean package -DskipTests
             cd target
             ls -al
             cd ../..
@@ -26,9 +26,9 @@ jobs:
             cp infrastructure/aws/codedeploy/*.sh .
             pwd
             ls -al
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/target/ROOT.war *.sh *.yml
+            zip -r csye6225-webapp-${CIRCLE_BUILD_NUM}.zip webapp/target/ROOT.war *.sh *.yml
             ls -al
-            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
+            mv csye6225-webapp-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
             ls -al
             pwd
             cd codedeploy_artifact
@@ -40,25 +40,29 @@ jobs:
       - run:
           name: install pip
           command: |
-                   sudo apt update
-                   sudo apt-get install python3
-                   python3 --version
-                   sudo apt install python3-pip
-                   pip3 --version
+            sudo apt-get update || sudo apt-get update
+            sudo apt-get install python3
+            python3 --version
+            sudo apt install python3-pip
+            pip3 --version
+      - run:
+          name: install aws cli
+          command: |
+            sudo pip3 install awscli
       - run:
           name: Upload Artifact to S3
           command: |
-                   sudo pip3 install awscli
-                   cd codedeploy_artifact
-                   aws s3 cp csye6225-web-app-${CIRCLE_BUILD_NUM}.zip s3://${bucketName}
-
+            cd codedeploy_artifact
+            aws s3 cp csye6225-webapp-${CIRCLE_BUILD_NUM}.zip s3://${bucketName}
       - run:
           name: Call codeploy to deploy application
           command: |
-            aws configure list
-            aws configure set region us-east-1
-            aws deploy create-deployment --application-name ${applicationName} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${groupName} --s3-location bucket=${bucketName},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip               
-      - run:
-          name: Make CodeDeploy API call
-          command: |
-            echo "Hello CodeDeploy" 
+            aws deploy register-application-revision --region ${AWS_REGION} --application-name csye6225-webapp \
+            --s3-location bucket=${bucketName},key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip,bundleType=zip
+            deploymentId=$(aws deploy create-deployment --region ${AWS_REGION} \
+            --application-name csye6225-webapp \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name csye6225-webapp-deployment \
+            --s3-location bucket=${bucketName},bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
+            --auto-rollback-configuration enabled=true,events=DEPLOYMENT_FAILURE,DEPLOYMENT_STOP_ON_ALARM,DEPLOYMENT_STOP_ON_REQUEST)
+            echo "$deploymentId"

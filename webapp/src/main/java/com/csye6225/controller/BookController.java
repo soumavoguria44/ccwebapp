@@ -58,10 +58,14 @@ public class BookController {
         try {
             List<Book> books = (List) bookRepository.findAll();
             for (Book book : books){
-                book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
-            }
-            String json = new Gson().toJson(books);
+                    if(book.getBookImage()!=null){
+
+               book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
+
+                    }
+         }  String json = new Gson().toJson(books);
             return json;
+
         }
         catch (Exception ex){
             logger.error(ex.getMessage(), ex.getStackTrace());
@@ -160,7 +164,11 @@ public class BookController {
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(id);
-            book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
+            if(book.getBookImage()!=null){
+                book.getBookImage().setUrl(fileHandler.getFile(book.getBookImage()));
+
+            }
+//
             String json = new Gson().toJson(book);
             if (book != null) {
 
