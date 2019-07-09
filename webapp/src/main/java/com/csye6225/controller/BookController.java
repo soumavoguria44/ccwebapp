@@ -84,7 +84,7 @@ public class BookController {
      * @return Json of the created book
      */
 
-    @RequestMapping(value = "/bookavi", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/book", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
 

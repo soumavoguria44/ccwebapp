@@ -57,8 +57,6 @@ jobs:
       - run:
           name: Call codeploy to deploy application
           command: |
-            aws configure list
-            aws configure set region us-east-1
             aws deploy register-application-revision --region ${AWS_REGION} --application-name csye6225-webapp \
             --s3-location bucket=${bucketName},key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip,bundleType=zip
             deploymentId=$(aws deploy create-deployment --region ${AWS_REGION} \
