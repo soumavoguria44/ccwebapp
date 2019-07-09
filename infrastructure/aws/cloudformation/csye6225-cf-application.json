@@ -89,7 +89,7 @@
                        "Fn::Join": [
                            "",
                         [
-                          "#!/bin/bash\n",
+                         "#!/bin/bash\n",
                           "sudo su\n",
                           "sudo systemctl stop tomcat\n",
                           "echo \"#!/bin/sh\n\" >> /opt/tomcat/bin/setenv.sh\n",
