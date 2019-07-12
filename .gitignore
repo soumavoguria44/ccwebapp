@@ -106,5 +106,4 @@ venv.bak/
 #IntelliJ
 
 *.iml
-*.mvn
 .idea/
