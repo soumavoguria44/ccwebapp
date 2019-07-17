@@ -51,7 +51,7 @@ public class BookController {
      * @param response
      * @return Json - All Books
      */
-    @RequestMapping(value = "/book", method= RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/bookavi", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetBooks(HttpServletRequest request, HttpServletResponse response){
 
@@ -84,7 +84,7 @@ public class BookController {
      * @return Json of the created book
      */
 
-    @RequestMapping(value = "/book", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/bookavi", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
 
@@ -119,7 +119,7 @@ public class BookController {
      * @return response status only
      */
 
-    @RequestMapping(value = "/book", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/bookavi", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public String UpdateBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book bookReq){
 
@@ -157,7 +157,7 @@ public class BookController {
      * @throws IOException
      */
 
-    @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/bookavi/{id}", method = RequestMethod.GET)
     @ResponseBody
     public String GetBookById(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
 
