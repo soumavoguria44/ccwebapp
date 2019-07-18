@@ -51,7 +51,7 @@ public class BookController {
      * @param response
      * @return Json - All Books
      */
-    @RequestMapping(value = "/bookavi", method= RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/book", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetBooks(HttpServletRequest request, HttpServletResponse response){
 
@@ -84,7 +84,7 @@ public class BookController {
      * @return Json of the created book
      */
 
-    @RequestMapping(value = "/bookavi", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/book", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
 
@@ -119,7 +119,7 @@ public class BookController {
      * @return response status only
      */
 
-    @RequestMapping(value = "/bookavi", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/book", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public String UpdateBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book bookReq){
 
@@ -157,7 +157,7 @@ public class BookController {
      * @throws IOException
      */
 
-    @RequestMapping(value = "/bookavi/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
     @ResponseBody
     public String GetBookById(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
 
@@ -230,7 +230,7 @@ public class BookController {
      * @throws Exception
      */
 
-    @RequestMapping(value = "/bookavi/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String ImageUpload(@PathVariable("idBook")String id, @RequestParam MultipartFile file, HttpServletResponse response) throws Exception {
 
@@ -280,7 +280,7 @@ public class BookController {
     }
 
 
-    @RequestMapping(value = "/bookavi/{idBook}/image/{idImage}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception {
 
@@ -311,7 +311,7 @@ public class BookController {
 
     }
 
-    @RequestMapping(value = "/bookavi/{idBook}/image/{idImage}", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public String UpdateImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,@RequestParam MultipartFile file,HttpServletResponse response) throws Exception {
 
@@ -353,7 +353,7 @@ public class BookController {
 
 
 
-    @RequestMapping(value = "/bookavi/{idBook}/image/{idImage}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public String DeleteImageById(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception{
 
