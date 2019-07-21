@@ -84,7 +84,7 @@ public class BookController {
      * @return Json of the created book
      */
 
-    @RequestMapping(value = "/bookAnurag", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/book", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
 
@@ -195,7 +195,7 @@ public class BookController {
      * @throws IOException
      */
 
-    @RequestMapping(value = "/bookAnurag/{id}", method = RequestMethod.DELETE, produces="application/json")
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public String DeleteBookById(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
 
@@ -230,7 +230,7 @@ public class BookController {
      * @throws Exception
      */
 
-    @RequestMapping(value = "/bookAnurag/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String ImageUpload(@PathVariable("idBook")String id, @RequestParam MultipartFile file, HttpServletResponse response) throws Exception {
 
@@ -280,7 +280,7 @@ public class BookController {
     }
 
 
-    @RequestMapping(value = "/bookAnurag/{idBook}/image/{idImage}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception {
 
@@ -353,7 +353,7 @@ public class BookController {
 
 
 
-    @RequestMapping(value = "/bookAnurag/{idBook}/image/{idImage}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public String DeleteImageById(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception{
 
