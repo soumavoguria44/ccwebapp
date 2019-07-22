@@ -9,6 +9,7 @@ import com.csye6225.services.FileHandler;
 import com.csye6225.services.ImageService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class BookController {
     @Autowired
     private FileHandler fileHandler;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     private static final String PNG = "image/png";
     private static final String JPG = "image/jpg";
     private static final String JPEG = "image/jpeg";
@@ -54,7 +58,7 @@ public class BookController {
     @RequestMapping(value = "/book", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetBooks(HttpServletRequest request, HttpServletResponse response){
-
+        statsDClient.incrementCounter("endpoint.book.api.get");
         try {
             List<Book> books = (List) bookRepository.findAll();
             for (Book book : books){
@@ -87,7 +91,7 @@ public class BookController {
     @RequestMapping(value = "/book", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
-
+        statsDClient.incrementCounter("endpoint.book.api.post");
         JsonObject jsonObject = new JsonObject();
       //  try {
             if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
@@ -122,7 +126,7 @@ public class BookController {
     @RequestMapping(value = "/book", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public String UpdateBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book bookReq){
-
+        statsDClient.incrementCounter("endpoint.book.api.put");
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(bookReq.getId());
@@ -160,7 +164,7 @@ public class BookController {
     @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
     @ResponseBody
     public String GetBookById(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
-
+        statsDClient.incrementCounter("endpoint.book.id.api.get");
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(id);
@@ -198,7 +202,7 @@ public class BookController {
     @RequestMapping(value = "/book/{id}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public String DeleteBookById(@PathVariable("id") String id, HttpServletResponse response) throws IOException{
-
+        statsDClient.incrementCounter("endpoint.book.id.api.delete");
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(id);
@@ -233,7 +237,7 @@ public class BookController {
     @RequestMapping(value = "/book/{idBook}/image", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String ImageUpload(@PathVariable("idBook")String id, @RequestParam MultipartFile file, HttpServletResponse response) throws Exception {
-
+        statsDClient.incrementCounter("endpoint.book.idBook.image.api.post");
         JsonObject jsonObject = new JsonObject();
 
         Book book = bookRepository.findById(id);
@@ -283,7 +287,7 @@ public class BookController {
     @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception {
-
+        statsDClient.incrementCounter("endpoint.book.idBook.image.idImage.api.get");
         JsonObject jsonObject = new JsonObject();
         try {
             Book book =bookRepository.findById(id);
@@ -314,7 +318,7 @@ public class BookController {
     @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public String UpdateImage(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,@RequestParam MultipartFile file,HttpServletResponse response) throws Exception {
-
+        statsDClient.incrementCounter("endpoint.book.idBook.image.idImage.api.put");
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(id);
@@ -356,7 +360,7 @@ public class BookController {
     @RequestMapping(value = "/book/{idBook}/image/{idImage}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public String DeleteImageById(@PathVariable("idBook")String id,@PathVariable("idImage")String idImage,HttpServletResponse response) throws Exception{
-
+        statsDClient.incrementCounter("endpoint.book.idBook.image.idImage.api.delete");
         JsonObject jsonObject = new JsonObject();
         try {
             Book book = bookRepository.findById(id);

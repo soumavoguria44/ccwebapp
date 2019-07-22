@@ -6,6 +6,7 @@ import com.csye6225.repository.BookRepository;
 import com.csye6225.repository.UserRepository;
 import com.csye6225.services.MyUserDetailsService;
 import com.google.gson.JsonObject;
+import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class UserController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /**
@@ -41,6 +45,7 @@ public class UserController {
     @RequestMapping(value = "/", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetUser(HttpServletRequest request, HttpServletResponse response){
+        statsDClient.incrementCounter("endpoint.api.get");
 
         JsonObject jsonObject = new JsonObject();
         try {
@@ -67,7 +72,7 @@ public class UserController {
 
     @ResponseBody
     public String Register(HttpServletRequest request, HttpServletResponse response, @RequestBody User user){
-
+        statsDClient.incrementCounter("endpoint.user.register.api.post");
         JsonObject jsonObject = new JsonObject();
      //   try {
             // User user = new User();
