@@ -4,9 +4,7 @@ import com.csye6225.models.Book;
 import com.csye6225.models.BookImage;
 import com.csye6225.repository.BookRepository;
 import com.csye6225.repository.ImageRepository;
-import com.csye6225.services.AwsFileHandler;
 import com.csye6225.services.FileHandler;
-import com.csye6225.services.ImageService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.timgroup.statsd.StatsDClient;
@@ -19,12 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Blob;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController("BookController")
@@ -47,6 +41,7 @@ public class BookController {
     private static final String JPG = "image/jpg";
     private static final String JPEG = "image/jpeg";
 
+   // LoggerUtility logger=new LoggerUtility();
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /**
@@ -54,7 +49,9 @@ public class BookController {
      * @param request
      * @param response
      * @return Json - All Books
+     *
      */
+
     @RequestMapping(value = "/book", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetBooks(HttpServletRequest request, HttpServletResponse response){
