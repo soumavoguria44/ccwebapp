@@ -204,6 +204,17 @@ public class BookController {
         try {
             Book book = bookRepository.findById(id);
             if (book != null) {
+                BookImage bookImage = imageRepository.findById(book.getBookImage().getId());
+                logger.info("before");
+                if (bookImage != null) {
+                    logger.info("inside");
+
+                    fileHandler.deleteFile(bookImage);
+                    logger.info("After");
+                    book.setBookImage(null);
+                }
+
+                imageRepository.delete(bookImage);
                 bookRepository.delete(book);
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
