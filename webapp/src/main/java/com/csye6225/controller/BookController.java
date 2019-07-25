@@ -42,7 +42,7 @@ public class BookController {
     private static final String JPEG = "image/jpeg";
 
    // LoggerUtility logger=new LoggerUtility();
-    private final static Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final static Logger logger = LoggerFactory.getLogger(BookController.class);
 
     /**
      * Get method to get all the books from the database
@@ -214,7 +214,7 @@ public class BookController {
                     book.setBookImage(null);
                 }
 
-                imageRepository.delete(bookImage);
+//                imageRepository.delete(bookImage);
                 bookRepository.delete(book);
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
