@@ -214,7 +214,7 @@ public class BookController {
                     book.setBookImage(null);
                 }
 
-                imageRepository.delete(bookImage);
+              //  imageRepository.delete(bookImage);
                 bookRepository.delete(book);
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
