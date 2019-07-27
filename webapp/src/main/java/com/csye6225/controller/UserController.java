@@ -6,6 +6,7 @@ import com.csye6225.repository.BookRepository;
 import com.csye6225.repository.UserRepository;
 import com.csye6225.services.MyUserDetailsService;
 import com.google.gson.JsonObject;
+import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class UserController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /**
@@ -41,6 +45,7 @@ public class UserController {
     @RequestMapping(value = "/", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String GetUser(HttpServletRequest request, HttpServletResponse response){
+        statsDClient.incrementCounter("endpoint.api.get");
 
         JsonObject jsonObject = new JsonObject();
         try {
@@ -49,6 +54,7 @@ public class UserController {
             return jsonObject.toString();
         }
         catch (Exception ex){
+            logger.info("user register");
             logger.error(ex.getMessage(), ex.getStackTrace());
             jsonObject.addProperty("error", "Exception occured! Check log");
             return jsonObject.toString();
@@ -67,10 +73,11 @@ public class UserController {
 
     @ResponseBody
     public String Register(HttpServletRequest request, HttpServletResponse response, @RequestBody User user){
-
+        statsDClient.incrementCounter("endpoint.user.register.api.post");
         JsonObject jsonObject = new JsonObject();
      //   try {
             // User user = new User();
+        logger.info("user register");
             EmailAndPasswordLogics emailPass = new EmailAndPasswordLogics();
 
             String email_id = user.getEmailAddress();
@@ -97,12 +104,6 @@ public class UserController {
                 jsonObject.addProperty("message", "Please enter a acceptable password");
                 response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
             }
-//        }
-//        catch (Exception ex){
-//            logger.error(ex.getMessage(), ex.getStackTrace());
-//            jsonObject.addProperty("error", "Exception occured! Check log");
-//            return jsonObject.toString();
-//        }
         return jsonObject.toString();
     }
 }
