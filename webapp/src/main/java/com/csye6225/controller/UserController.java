@@ -158,7 +158,8 @@ public class UserController {
         User userExists = userRepository.findByEmailAddress(user.getEmailAddress());
         if (userExists != null) {
             AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
-            String topic = sns.createTopic("password_reset").getTopicArn();
+            String topic = sns.createTopic("reset_password").getTopicArn();
+            logger.info(topic);
             String emailJson = "{ \"email\":\""+user.getEmailAddress()+"\"}";
             PublishRequest pubRequest = new PublishRequest(topic, emailJson);
             sns.publish(pubRequest);
