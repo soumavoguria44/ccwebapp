@@ -84,10 +84,8 @@ public class EmailAndPasswordLogics {
                 logger.info("No Topic found by the name : ", topicName);
             }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getStackTrace().toString());
         }
 
         logger.info("Arn corresponding to topic name {} is {} ", topicName, topicArn);
