@@ -1,5 +1,9 @@
 package com.csye6225.controller;
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.PublishRequest;
 import com.csye6225.businessLogics.EmailAndPasswordLogics;
 import com.csye6225.models.User;
 import com.csye6225.repository.BookRepository;
@@ -10,11 +14,15 @@ import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -109,37 +117,62 @@ public class UserController {
         return jsonObject.toString();
     }
 
-    @PostMapping(value = "/reset", produces = "application/json")
-    public String generateResetToken(@RequestBody User user, HttpServletRequest request,
-                                     HttpServletResponse response) {
+//    @PostMapping(value = "/reset", produces = "application/json")
+//    public String generateResetToken(@RequestBody User user, HttpServletRequest request,
+//                                     HttpServletResponse response) {
+//
+//        statsDClient.incrementCounter("endpoint.reset.api.post");
+//        logger.info("generateResetToken - Start ");
+//        logger.info("email" + " " + (user.getEmailAddress()));
+//        JsonObject j = new JsonObject();
+//        EmailAndPasswordLogics emailAndPasswordLogics = new EmailAndPasswordLogics();
+//        try {
+//            User user1 = userRepository.findByEmailAddress(user.getEmailAddress());
+//            if (user1 != null) {
+//                emailAndPasswordLogics.sendMessage(user1.getEmailAddress());
+//                j.addProperty("message", "Password reset email sent");
+//                response.setStatus(HttpServletResponse.SC_CREATED);
+//
+//            } else {
+//                logger.info("user not present");
+//                j.addProperty("Error", "Email does not exist!");
+//                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//            }
+//
+//        } catch (Exception e) {
+//            logger.error("Exception in generating reset token : " + e.getMessage());
+//            j.addProperty("message", "Reset email failed");
+//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//        }
+//
+//        logger.info("generateResetToken - End ");
+//
+//        return j.toString();
+//
+//    }
 
-        statsDClient.incrementCounter("endpoint.reset.api.post");
-        logger.info("generateResetToken - Start ");
-        logger.info("email" + " " + (user.getEmailAddress()));
-        JsonObject j = new JsonObject();
-        EmailAndPasswordLogics emailAndPasswordLogics = new EmailAndPasswordLogics();
-        try {
-            User user1 = userRepository.findByEmailAddress(user.getEmailAddress());
-            if (user1 != null) {
-                emailAndPasswordLogics.sendMessage(user1.getEmailAddress());
-                j.addProperty("message", "Password reset email sent");
-                response.setStatus(HttpServletResponse.SC_CREATED);
-
-            } else {
-                logger.info("user not present");
-                j.addProperty("Error", "Email does not exist!");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-
-        } catch (Exception e) {
-            logger.error("Exception in generating reset token : " + e.getMessage());
-            j.addProperty("message", "Reset email failed");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    @RequestMapping(value = "/reset", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody User user) {
+        statsDClient.incrementCounter("endpoint.resetPassword.http.post");
+        Map<String, Object> m = new HashMap<String, Object>();
+        User userExists = userRepository.findByEmailAddress(user.getEmailAddress());
+        if (userExists != null) {
+            AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
+            String topic = sns.createTopic("password_reset").getTopicArn();
+            String emailJson = "{ \"email\":\""+user.getEmailAddress()+"\"}";
+            PublishRequest pubRequest = new PublishRequest(topic, emailJson);
+            sns.publish(pubRequest);
+            PublishRequest pubRequest1 = new PublishRequest(topic, emailJson);
+            //sns.publish(pubRequest);
+            //sns.publish(pubRequest);
+            sns.publish(pubRequest1);
+            logger.info("Email sent successfully - CREATED " + UserController.class);
+            m.put("status", HttpStatus.CREATED.toString());
+            return new ResponseEntity<Map<String, Object>>(m, HttpStatus.CREATED);
+        } else {
+            m.put("message", "Username does not exist");
+            logger.info("Username does not exist - BAD_REQUEST " + UserController.class);
+            return new ResponseEntity<Map<String, Object>>(m, HttpStatus.BAD_REQUEST);
         }
-
-        logger.info("generateResetToken - End ");
-
-        return j.toString();
-
     }
 }
