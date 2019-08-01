@@ -27,8 +27,7 @@ public class UserController {
 
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private EmailAndPasswordLogics emailAndPasswordLogics;
+
 
     @Autowired
     private MyUserDetailsService myUserDetailsService;
@@ -118,7 +117,7 @@ public class UserController {
         logger.info("generateResetToken - Start ");
         logger.info("email" + " " + (user.getEmailAddress()));
         JsonObject j = new JsonObject();
-
+        EmailAndPasswordLogics emailAndPasswordLogics = new EmailAndPasswordLogics();
         try {
             User user1 = userRepository.findByEmailAddress(user.getEmailAddress());
             if (user1 != null) {
