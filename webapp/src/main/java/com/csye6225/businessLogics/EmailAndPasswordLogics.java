@@ -56,7 +56,7 @@ public class EmailAndPasswordLogics {
 
         logger.info("Sending Message - {} ", emailId);
 
-        String topicArn = getTopicArn("password_reset");
+        String topicArn = getTopicArn("reset_password");
         PublishRequest publishRequest = new PublishRequest(topicArn, emailId);
         Future<PublishResult> publishResultFuture = amazonSNSClient.publishAsync(publishRequest);
         String messageId = publishResultFuture.get().getMessageId();
