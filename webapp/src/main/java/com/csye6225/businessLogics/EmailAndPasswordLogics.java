@@ -57,24 +57,29 @@ public class EmailAndPasswordLogics {
         logger.info("Sending Message - {} ", emailId);
 
         String topicArn = getTopicArn("reset_password");
+
         PublishRequest publishRequest = new PublishRequest(topicArn, emailId);
+        logger.info("publish");
         Future<PublishResult> publishResultFuture = amazonSNSClient.publishAsync(publishRequest);
         String messageId = publishResultFuture.get().getMessageId();
+        logger.info(messageId);
 
         logger.info("Send Message {} with message Id {} ", emailId, messageId);
 
     }
 
     public String getTopicArn(String topicName) {
-
+        //logger.info(topicArn);
         String topicArn = null;
 
         try {
             Topic topic = amazonSNSClient.listTopicsAsync().get().getTopics().stream()
                     .filter(t -> t.getTopicArn().contains(topicName)).findAny().orElse(null);
+            logger.info(topic.toString());
 
             if (null != topic) {
                 topicArn = topic.getTopicArn();
+                logger.info(topicArn);
             } else {
                 logger.info("No Topic found by the name : ", topicName);
             }
