@@ -160,7 +160,7 @@ public class UserController {
             AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
             String topic = sns.createTopic("reset_password").getTopicArn();
             logger.info(topic);
-            String emailJson = "{ \"email\":\""+user.getEmailAddress()+"\"}";
+            String emailJson = "{ \"emailAddress\":\""+user.getEmailAddress()+"\"}";
             PublishRequest pubRequest = new PublishRequest(topic, emailJson);
             sns.publish(pubRequest);
             PublishRequest pubRequest1 = new PublishRequest(topic, emailJson);
