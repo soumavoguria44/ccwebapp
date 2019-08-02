@@ -216,6 +216,42 @@
                 ]
             }
         },
+        "RolePoliciesLmabda": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "ManagedPolicyName": "LmbdaCodeDeploy-S3",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:GetObject",
+                                "s3:PutObject",
+                                "s3:DeleteObject"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${bucketName}/*",
+                                        {
+                                            "bucketName": {
+                                                "Ref": "S3CodeBucket"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "LambdaExecutionRole"
+                    }
+                ]
+            }
+        },
         "RolePolicies": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
@@ -251,9 +287,38 @@
                 "Roles": [
                     {
                         "Ref": "CodeDeployEC2ServiceRole"
+                       
                     }
                 ]
             }
+        },
+        "SNSPolicy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "Description": "This policy allows EC2 to access SNS",
+                "Path": "/",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "SNS:*"
+                            ],
+                            "Resource": [
+                                "*"
+                            ]
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "CodeDeployEC2ServiceRole"
+                    }
+                ],
+                "ManagedPolicyName": "SNSPolicy"
+            },
+            "DependsOn": "CodeDeployEC2ServiceRole"
         },
         "RootInstanceProfile": {
             "Type": "AWS::IAM::InstanceProfile",
@@ -273,7 +338,8 @@
                 "RoleName": "CodeDeployServiceRole",
                 "Path": "/",
                 "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+                    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole",
+                    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
                 ],
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
@@ -293,6 +359,64 @@
                 }
             }
         }
+    ,"LambdaExecutionRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+            "AssumeRolePolicyDocument": {
+                "Statement": [
+                    {
+                        "Action": [
+                            "sts:AssumeRole"
+                        ],
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": [
+                                "lambda.amazonaws.com"
+                            ]
+                        }
+                    }
+                ],
+                "Version": "2012-10-17"
+            },
+            "Path": "/",
+            "RoleName": "LambdaExecutionRole",
+            "ManagedPolicyArns": [
+                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+                "arn:aws:iam::aws:policy/AmazonSESFullAccess",
+                "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+            ]
+        }
+    },
+    
+    "LambdaExecutionCircleCI":{
+        "Type": "AWS::IAM::ManagedPolicy",
+        "Properties": {
+            "ManagedPolicyName": "LambdaExecutionCircleCI",
+            "Description": "Upload to S3",
+            "Path": "/",
+            "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Sid": "ConfigureFunctions",
+                        "Effect": "Allow",
+                        "Action": [
+                            "lambda:CreateFunction",
+                            "lambda:UpdateFunctionConfiguration",
+                            "lambda:UpdateFunctionCode"
+                        ],
+                        "Resource": "*"
+                    }
+                ]
+            },
+            "Users": [
+                {
+                    "Ref": "CircleCIUser"
+                }
+            ]
+        } 
+    }
     },
     "Outputs": {
         "CodeDeployServiceRole": {
@@ -304,6 +428,17 @@
             },
             "Export": {
                 "Name": "CodeDeployServiceRole"
+            }
+        },"LambdaExecutionRoleARN": {
+            "Description": "Exporting the lambda execution role for lambda function in application json",
+            "Value": {
+                "Fn::GetAtt": [
+                    "LambdaExecutionRole",
+                    "Arn"
+                ]
+            },
+            "Export": {
+                "Name": "LambdaExecutionRoleARN"
             }
         },
 
