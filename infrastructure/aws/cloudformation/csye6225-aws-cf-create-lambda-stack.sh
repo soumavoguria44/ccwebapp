@@ -4,8 +4,8 @@
 
     echo "enter domain"
     read Domain
-    
-		
+
+
 	aws cloudformation create-stack \
     --stack-name ${StackName} \
     --template-body file://csye6225-aws-cf-create-lambda.json \
@@ -14,8 +14,5 @@
 
    	echo "Waiting on ${StackName} for create completion..."
     aws cloudformation wait stack-create-complete --stack-name ${StackName}
-	echo "Stack creation successful"
+	echo "Lambda Stack creation successfully!!!"
 	fnUpdate=$(aws lambda update-function-configuration --function-name MyLambdaFunction --handler LogEvent::handleRequest --runtime java8)
-
-
-  
