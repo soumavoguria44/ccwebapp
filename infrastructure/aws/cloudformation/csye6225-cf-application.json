@@ -11,7 +11,10 @@
         "s3bucketName": {
             "Description": "s3bucketName for web",
             "Type": "String"
+        },"S3CodeBucket": {
+            "Type": "String"
         }
+        
         
     },
     "Resources": {
