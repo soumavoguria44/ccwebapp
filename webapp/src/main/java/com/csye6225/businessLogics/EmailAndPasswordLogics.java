@@ -9,7 +9,6 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
 import com.amazonaws.services.sns.model.Topic;
@@ -17,6 +16,7 @@ import com.amazonaws.services.sns.model.Topic;
 public class EmailAndPasswordLogics {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private AmazonSNSAsync amazonSNSClient;
 
 
@@ -91,5 +91,8 @@ public class EmailAndPasswordLogics {
         logger.info("Arn corresponding to topic name {} is {} ", topicName, topicArn);
 
         return topicArn;
+
+
+
     }
 }

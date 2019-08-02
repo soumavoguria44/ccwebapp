@@ -164,8 +164,7 @@ public class UserController {
             PublishRequest pubRequest = new PublishRequest(topic, emailJson);
             sns.publish(pubRequest);
             PublishRequest pubRequest1 = new PublishRequest(topic, emailJson);
-            //sns.publish(pubRequest);
-            //sns.publish(pubRequest);
+
             sns.publish(pubRequest1);
             logger.info("Email sent successfully - CREATED " + UserController.class);
             m.put("status", HttpStatus.CREATED.toString());
