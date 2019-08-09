@@ -105,7 +105,7 @@ public class BookController {
             }
         }
         catch (Exception ex){
-            logger.info("created book");
+            logger.info("created books");
             logger.error(ex.getMessage(), ex.getStackTrace());
             jsonObject.addProperty("error", "Exception occured! Check log");
             return jsonObject.toString();
