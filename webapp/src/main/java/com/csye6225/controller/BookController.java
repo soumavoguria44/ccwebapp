@@ -97,7 +97,9 @@ public class BookController {
                 bookRepository.save(book);
                 String json = new Gson().toJson(book);
                 response.setStatus(HttpServletResponse.SC_CREATED);
+                logger.info("created books");
                 return json;
+
             }
             else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
