@@ -90,25 +90,28 @@ public class BookController {
     public String SaveBook(HttpServletRequest request, HttpServletResponse response, @RequestBody Book book){
         statsDClient.incrementCounter("endpoint.book.api.post");
         JsonObject jsonObject = new JsonObject();
-      //  try {
+        try {
             if(book.getTitle()!=null && book.getAuthor()!=null && book.getIsbn()!=null && book.getQuantity()!=0) {
                 UUID id = UUID.randomUUID(); // Generating UUID for Book Id
                 book.setId(id.toString());
                 bookRepository.save(book);
                 String json = new Gson().toJson(book);
                 response.setStatus(HttpServletResponse.SC_CREATED);
+                logger.info("created books");
                 return json;
+
             }
             else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return jsonObject.toString();
             }
-//        }
-//        catch (Exception ex){
-//            logger.error(ex.getMessage(), ex.getStackTrace());
-//            jsonObject.addProperty("error", "Exception occured! Check log");
-//            return jsonObject.toString();
-//        }
+        }
+        catch (Exception ex){
+            logger.info("created books");
+            logger.error(ex.getMessage(), ex.getStackTrace());
+            jsonObject.addProperty("error", "Exception occured! Check log");
+            return jsonObject.toString();
+        }
 
     }
 
